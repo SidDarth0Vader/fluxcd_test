@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlops-project-deployment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mlops-project
+  template:
+    metadata:
+      labels:
+        app: mlops-project
+    spec:
+      containers:
+        - name: mlops-project
+          image: ghcr.io/siddarth0vader/mlops_project:v0.1.0 # {"$imagepolicy": "default:mlops_project:tag"}
+          imagePullPolicy: IfNotPresent
+          ports:
+          - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    netbird.io/expose: "true"
+    netbird.io/policy: default
+    netbird.io/resource-name: mlops-project
+    netbird.io/groups: mlops-k8s-minikube
+  labels:
+    app: mlops-project
+  name: mlops-project
+  namespace: default
+spec:
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: mlops-project
+  type: NodePort
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: mlops-project
+spec:
+  image: ghcr.io/siddarth0vader/mlops_project
+  provider: generic
+  interval: 3m
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: mlops-project
+spec:
+  imageRepositoryRef:
+    name: mlops-project
+  filterTags:
+    pattern: "^v(.+)$"
+    extract: "$1"
+  policy:
+    semver:
+      range: x.x.x
