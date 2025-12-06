@@ -41,26 +41,3 @@ spec:
   selector:
     app: mlops-project
   type: NodePort
----
-apiVersion: image.toolkit.fluxcd.io/v1beta2
-kind: ImageRepository
-metadata:
-  name: mlops-project
-spec:
-  image: ghcr.io/siddarth0vader/mlops_project
-  provider: generic
-  interval: 3m
----
-apiVersion: image.toolkit.fluxcd.io/v1beta2
-kind: ImagePolicy
-metadata:
-  name: mlops-project
-spec:
-  imageRepositoryRef:
-    name: mlops-project
-  filterTags:
-    pattern: "^v(.+)$"
-    extract: "$1"
-  policy:
-    semver:
-      range: x.x.x
