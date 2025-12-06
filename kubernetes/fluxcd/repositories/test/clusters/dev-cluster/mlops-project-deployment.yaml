@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: mlops-project
-          image: ghcr.io/siddarth0vader/mlops_project:v0.1.2 # {"$imagepolicy": "default:mlops-project"}
+          image: ghcr.io/siddarth0vader/mlops_project:v0.1.2 # {"$imagepolicy": "flux-system:mlops-project"}
           imagePullPolicy: IfNotPresent
           ports:
           - containerPort: 8080
